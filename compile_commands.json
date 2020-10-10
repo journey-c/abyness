@@ -1,0 +1,27 @@
+[
+    {
+        "command": "cc -c -std=gnu99 -Wall -O2 -I/home/lvcheng/devspace/cpp/lyuling/include -o net.o /home/lvcheng/devspace/cpp/lyuling/net.c",
+        "directory": "/home/lvcheng/devspace/cpp/lyuling",
+        "file": "/home/lvcheng/devspace/cpp/lyuling/net.c"
+    },
+    {
+        "command": "cc -c -std=gnu99 -Wall -O2 -I/home/lvcheng/devspace/cpp/lyuling/include -o CuTest.o /home/lvcheng/devspace/cpp/lyuling/CuTest.c",
+        "directory": "/home/lvcheng/devspace/cpp/lyuling",
+        "file": "/home/lvcheng/devspace/cpp/lyuling/CuTest.c"
+    },
+    {
+        "command": "cc -c -std=gnu99 -Wall -O2 -I/home/lvcheng/devspace/cpp/lyuling/include -o io.o /home/lvcheng/devspace/cpp/lyuling/io.c",
+        "directory": "/home/lvcheng/devspace/cpp/lyuling",
+        "file": "/home/lvcheng/devspace/cpp/lyuling/io.c"
+    },
+    {
+        "command": "cc -c -std=gnu99 -Wall -O2 -I/home/lvcheng/devspace/cpp/lyuling/include -o front.o /home/lvcheng/devspace/cpp/lyuling/front.c",
+        "directory": "/home/lvcheng/devspace/cpp/lyuling",
+        "file": "/home/lvcheng/devspace/cpp/lyuling/front.c"
+    },
+    {
+        "command": "cc -c -std=gnu99 -Wall -O2 -I/home/lvcheng/devspace/cpp/lyuling/include -o main.o /home/lvcheng/devspace/cpp/lyuling/main.c",
+        "directory": "/home/lvcheng/devspace/cpp/lyuling",
+        "file": "/home/lvcheng/devspace/cpp/lyuling/main.c"
+    }
+]
