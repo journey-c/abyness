@@ -54,3 +54,6 @@ dkms.conf
 # clangd
 .clangd/
 bin/
+
+# compile database
+compile_commands.json
