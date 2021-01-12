@@ -1,7 +1,6 @@
 CC          := cc
 LIB_FLAGS   := -c
-FLAGS       := -std=gnu99 -Wall
-# FLAGS       := -std=gnu99 -Wall -O2
+FLAGS       := -std=gnu99 -Wall -O2
 OBJECT      := lyuling
 LIB         := -lpthread
 

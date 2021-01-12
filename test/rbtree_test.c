@@ -6,8 +6,8 @@
 #include "CuTest.h"
 #include "util/rbtree.h"
 
-#define color_red "\x1b[1;31m%s\x1b[0m\n"
-#define color_black "\x1b[1;34m%s\x1b[0m\n"
+#define color_red "\x1b[1;31m%s\x1b[0m "
+#define color_black "\x1b[1;34m%s\x1b[0m "
 
 struct rb_root *map;
 
@@ -97,9 +97,9 @@ void print(struct rb_node *node, int layer) {
   /* } else { */
   /* printf("%s -> NULL\n", container_of(node, struct node, rb_node)->key); */
   /* } */
-  for (int i = 0; i < layer; i++) {
-    printf("\t");
-  }
+  /* for (int i = 0; i < layer; i++) { */
+    /* printf("\t"); */
+  /* } */
   if (rb_is_red(node)) {
     printf(color_red, container_of(node, struct node, rb_node)->key);
   } else {

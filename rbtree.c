@@ -311,14 +311,11 @@ void rb_erase(struct rb_root *root, struct rb_node *node) {
     } else {
       parent->right = child;
     }
-    if (child) {
-      rb_set_parent(child, parent);
-    }
   } else {
     root->rb_node = child;
-    if (child) {
-      rb_set_parent(child, parent);
-    }
+  }
+  if (child) {
+    rb_set_parent(child, parent);
   }
 
 color:
