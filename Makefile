@@ -1,6 +1,7 @@
 CC          := cc
 LIB_FLAGS   := -c
-FLAGS       := -std=gnu99 -Wall -O2
+FLAGS       := -std=gnu99 -Wall
+# FLAGS       := -std=gnu99 -Wall -O2
 OBJECT      := lyuling
 LIB         := -lpthread
 
@@ -34,7 +35,7 @@ test :
 ifeq ($(unit),)
 	@printf '%b %b\n  %b %b %b %b\n' $(BINCOLOR)Usage:$(ENDCOLOR) $(MAKECOLOR)make test unit=net$(ENDCOLOR)
 else 
-	@$(CC) $(FLAGS) $(INCLUDE) -o $(unit) $(subst main.c,,$(SOURCE_FILE)) test/$(unit)_test.c
+	@$(CC) $(FLAGS) -g $(INCLUDE) -o $(unit) $(subst main.c,,$(SOURCE_FILE)) test/$(unit)_test.c
 	@printf '%b %b %b %b %b\n' $(MAKECOLOR)=== TEST RUN ===$(ENDCOLOR)
 	@./$(unit)
 	@rm -f $(unit)
@@ -44,5 +45,6 @@ endif
 clean :
 	@rm -f *.o && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)*.o$(ENDCOLOR)
 	@rm -rf $(BINARY) && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)bin$(ENDCOLOR)
+	@rm -f core* && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)core*$(ENDCOLOR)
 
 .PHONY : clean test

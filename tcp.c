@@ -5,14 +5,14 @@
 #include <netdb.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 static void net_set_error(char *err, const char *fmt, ...) {
-  if (!err)
-    return;
+  if (!err) return;
   va_list ap;
   va_start(ap, fmt);
   vsnprintf(err, ERROR_MAX, fmt, ap);
