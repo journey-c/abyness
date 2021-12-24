@@ -1,21 +1,21 @@
-#ifndef _RBTREE_H_
-#define _RBTREE_H_
+#ifndef _UTIL_RBTREE_H_
+#define _UTIL_RBTREE_H_
 
 #include <stdint.h>
 
 #if defined(container_of)
 #undef container_of
-#define container_of(ptr, type, member)                \
-  ({                                                   \
-    const typeof(((type *)0)->member) *__mptr = (ptr); \
-    (type *)((char *)__mptr - offsetof(type, member)); \
-  })
+#define container_of(ptr, type, member)                    \
+    ({                                                     \
+        const typeof(((type *)0)->member) *__mptr = (ptr); \
+        (type *)((char *)__mptr - offsetof(type, member)); \
+    })
 #else
-#define container_of(ptr, type, member)                \
-  ({                                                   \
-    const typeof(((type *)0)->member) *__mptr = (ptr); \
-    (type *)((char *)__mptr - offsetof(type, member)); \
-  })
+#define container_of(ptr, type, member)                    \
+    ({                                                     \
+        const typeof(((type *)0)->member) *__mptr = (ptr); \
+        (type *)((char *)__mptr - offsetof(type, member)); \
+    })
 #endif
 
 #if defined(offsetof)
@@ -26,13 +26,13 @@
 #endif
 
 struct rb_node {
-  long rb_parent_color;
-  struct rb_node *left;
-  struct rb_node *right;
+    long rb_parent_color;
+    struct rb_node *left;
+    struct rb_node *right;
 } __attribute__((aligned(sizeof(long))));
 
 struct rb_root {
-  struct rb_node *rb_node;
+    struct rb_node *rb_node;
 };
 
 #define RB_RED 0
@@ -46,16 +46,16 @@ struct rb_root {
 #define rb_set_black(r) ((r)->rb_parent_color |= 1)
 
 #define RB_ROOT \
-  (struct rb_root) { NULL, }
+    (struct rb_root) { NULL, }
 
 static inline void rb_set_parent(struct rb_node *rb, struct rb_node *p) {
-  rb->rb_parent_color = ((rb->rb_parent_color & 3) | (unsigned long)p);
-  return;
+    rb->rb_parent_color = ((rb->rb_parent_color & 3) | (unsigned long)p);
+    return;
 }
 
 static inline void rb_set_color(struct rb_node *rb, int color) {
-  rb->rb_parent_color = (rb->rb_parent_color & ~1) | color;
-  return;
+    rb->rb_parent_color = (rb->rb_parent_color & ~1) | color;
+    return;
 }
 
 extern void rb_init(struct rb_root *root);
@@ -66,4 +66,4 @@ extern struct rb_node *rb_prev(struct rb_root *root, struct rb_node *rb);
 extern struct rb_node *rb_first(struct rb_root *root, struct rb_node *rb);
 extern struct rb_node *rb_last(struct rb_root *root, struct rb_node *rb);
 
-#endif /* _RBTREE_H_ */
+#endif /* _UTIL_RBTREE_H_ */

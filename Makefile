@@ -3,12 +3,11 @@ LIB_FLAGS   := -c
 FLAGS       := -std=gnu99 -Wall -O2
 OBJECT      := lyuling
 LIB         := -lpthread
+PWD         := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-BINARY      =  bin
-INCLUDE     := -Iinclude
+INCLUDE     := -I.
 
-SOURCE_FILE = $(wildcard *.c)
-OBJS        = $(patsubst %.c, %.o, $(SOURCE_FILE))
+OBJS        := front.o io.o main.o net_tcp.o task.o util_map.o util_rbtree.o
 
 CCCOLOR     = "\033[34m" 
 LINKCOLOR   = "\033[34;1m" 
@@ -17,18 +16,13 @@ BINCOLOR    = "\033[37;1m"
 MAKECOLOR   = "\033[32;1m" 
 ENDCOLOR    = "\033[0m"
 
-ALL : $(OBJECT)
-	@rm -rf $(BINARY)
-	@mkdir -p $(BINARY)
-	@mv $(OBJECT) $(BINARY)
-	@printf '%b %b %b %b\n' $(CCCOLOR)LINK$(ENDCOLOR) $(BINCOLOR)$(OBJECT)$(ENDCOLOR)
-
-$(OBJECT) : $(OBJS)
-	@$(CC) $(FLAGS) $(INCLUDE) -o $(OBJECT) $(OBJS) $(LIBRARY) $(LIB)
-	@printf '%b %b %b %b %b %b\n' $(CCCOLOR)CC$(ENDCOLOR) $(SRCCOLOR)$(notdir $<)$(ENDCOLOR)
+$(OBJECT): $(OBJS)
+	@$(CC) $(FLAGS) $(INCLUDE) -o $(OBJECT) $(OBJS) $(LIB)
+	@printf '%b %b %b %b %b %b\n' $(LINKCOLOR)LINK$(ENDCOLOR) $(SRCCOLOR) "$(OBJS)" $(ENDCOLOR)
 
 $(OBJS) : %.o : %.c
-	$(CC) $(LIB_FLAGS) $(FLAGS) $(INCLUDE) -o $@ $<
+	@$(CC) $(LIB_FLAGS) $(FLAGS) $(INCLUDE) -o $@ $<
+	@printf '%b %b %b %b %b %b\n' $(CCCOLOR)CC$(ENDCOLOR) $(SRCCOLOR)$(notdir $<)$(ENDCOLOR)
 
 test :
 ifeq ($(unit),)
@@ -42,8 +36,8 @@ else
 endif
 
 clean :
+	@rm -f $(OBJECT) && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)$(OBJECT)$(ENDCOLOR)
 	@rm -f *.o && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)*.o$(ENDCOLOR)
-	@rm -rf $(BINARY) && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)bin$(ENDCOLOR)
 	@rm -f core* && printf '%b %b %b %b\n' $(CCCOLOR)CLEAN$(ENDCOLOR) $(SRCCOLOR)core*$(ENDCOLOR)
 
 .PHONY : clean test
