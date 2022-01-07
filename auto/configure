@@ -1,0 +1,7 @@
+. auto/options
+. auto/init
+. auto/sources
+
+test -d $ABNS_OBJS || mkdir -p $ABNS_OBJS
+
+. auto/make

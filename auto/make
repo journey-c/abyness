@@ -1,0 +1,36 @@
+echo "creating $ABNS_MAKEFILE"
+
+mkdir -p $ABNS_OBJS/src
+
+cat << END                                                     > $ABNS_MAKEFILE
+
+CCCOLOR     = "\033[34m" 
+LINKCOLOR   = "\033[34;1m" 
+SRCCOLOR    = "\033[33m" 
+BINCOLOR    = "\033[37;1m" 
+MAKECOLOR   = "\033[32;1m" 
+ENDCOLOR    = "\033[0m"
+
+CC   = $CC
+LINK = \$(CC)
+
+ALL_INCS = -I src/
+
+END
+
+abns_all_objs=`echo $ALL_SRCS \
+    | sed -e "s#\([^ ]*\.\)cc#$ABNS_OBJS\/\1o#g" \
+          -e "s#\([^ ]*\.\)c#$ABNS_OBJS\/\1o#g"`
+
+cat << END                                                     >> $ABNS_MAKEFILE
+
+build:  binary modules manpage
+
+binary: $ABNS_OBJS/abyness
+
+$ABNS_OBJS/abyness: 
+
+$abns_all_objs
+    \$(LINK)
+
+END

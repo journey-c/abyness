@@ -58,3 +58,4 @@ bin/
 # compile database
 compile_commands.json
 .cache/
+objs/

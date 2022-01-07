@@ -1,0 +1,22 @@
+ALL_INCS="src"
+
+ALL_DEPS="front.h \
+          io.h \
+          net_define.h \
+          net_http_client.h \
+          net_http_define.h \
+          net_http_request.h \
+          net_http_response.h \
+          net_http_server.h \
+          net_tcp.h \
+          task.h \
+          util_map.h \
+          util_rbtree.h"
+
+ALL_SRCS="front.c \
+          io.c \
+          main.c \
+          net_tcp.c \
+          task.c \
+          util_map.c \
+          util_rbtree.c"
