@@ -15,9 +15,9 @@
 struct io_rbuffer {
     int fd;
     char *buf;
-    size_t cap;
-    size_t r;
-    size_t w;
+    ssize_t cap;
+    ssize_t r;
+    ssize_t w;
 };
 
 static int __rbuf_fill(io_rbuffer *rbuf) {
@@ -50,7 +50,7 @@ static int __rbuf_fill(io_rbuffer *rbuf) {
 }
 
 static ssize_t __rbuf_index(io_rbuffer *rbuf, char delim) {
-    for (size_t i = rbuf->r; i < rbuf->w; ++i) {
+    for (ssize_t i = rbuf->r; i < rbuf->w; ++i) {
         if (rbuf->buf[i] == delim) {
             return i;
         }
@@ -109,7 +109,7 @@ int rbuf_read_line(io_rbuffer *rbuf, void *usrbuf) {
     return BUFFER_READ_OVERSIZE;
 }
 
-int rbuf_read_bytes(io_rbuffer *rbuf, void *usrbuf, size_t n) {
+int rbuf_read_bytes(io_rbuffer *rbuf, void *usrbuf, ssize_t n) {
     if (rbuf == NULL || rbuf->buf == NULL) {
         return BUFFER_READ_ERROR;
     }

@@ -1,22 +1,22 @@
-ALL_INCS="src"
+# source files
 
-ALL_DEPS="front.h \
-          io.h \
-          net_define.h \
-          net_http_client.h \
-          net_http_define.h \
-          net_http_request.h \
-          net_http_response.h \
-          net_http_server.h \
-          net_tcp.h \
-          task.h \
-          util_map.h \
-          util_rbtree.h"
+ALL_DEPS="src/front.h \
+         src/io.h \
+         src/net_define.h \
+         src/net_http_client.h \
+         src/net_http_define.h \
+         src/net_http_request.h \
+         src/net_http_response.h \
+         src/net_http_server.h \
+         src/net_tcp.h \
+         src/task.h \
+         src/util_map.h \
+         src/util_rbtree.h"
 
-ALL_SRCS="front.c \
-          io.c \
-          main.c \
-          net_tcp.c \
-          task.c \
-          util_map.c \
-          util_rbtree.c"
+ALL_SRCS="src/front.c \
+         src/io.c \
+         src/server.c \
+         src/net_tcp.c \
+         src/task.c \
+         src/util_map.c \
+         src/util_rbtree.c"

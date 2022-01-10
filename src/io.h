@@ -21,7 +21,7 @@ typedef struct io_rbuffer io_rbuffer;
 
 extern io_rbuffer *rbuf_malloc(int, int32_t);
 extern int rbuf_read_line(io_rbuffer *, void *);
-extern int rbuf_read_bytes(io_rbuffer *, void *, size_t);
+extern int rbuf_read_bytes(io_rbuffer *, void *, ssize_t);
 extern void rbuf_free(io_rbuffer *);
 
 #endif /* _IO_ */

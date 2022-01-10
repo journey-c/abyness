@@ -1,1 +1,2 @@
+# init variable
 ABNS_MAKEFILE=$ABNS_OBJS/Makefile

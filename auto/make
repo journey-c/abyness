@@ -1,6 +1,20 @@
+# generate makefile
+
 echo "creating $ABNS_MAKEFILE"
 
 mkdir -p $ABNS_OBJS/src
+
+abns_regex_cont=' \\\
+	'
+abns_regex_dirsep="\/"
+abns_tab=' \
+		'
+abns_cont=' \
+	'
+
+abns_deps=`echo $ALL_DEPS \
+     | sed -e "s/  *\([^ ][^ ]*\)/$abns_regex_cont\1/g" \
+           -e "s/\//$abns_regex_dirsep/g"`
 
 cat << END                                                     > $ABNS_MAKEFILE
 
@@ -11,9 +25,11 @@ BINCOLOR    = "\033[37;1m"
 MAKECOLOR   = "\033[32;1m" 
 ENDCOLOR    = "\033[0m"
 
-CC   = $CC
-LINK = \$(CC)
+CC     = $CC
+LINK   = \$(CC)
+CFLAGS = -pipe  -O -W -Wall -Wpointer-arith -Wno-unused-parameter -Werror -g
 
+ALL_DEPS = $abns_deps
 ALL_INCS = -I src/
 
 END
@@ -21,16 +37,51 @@ END
 abns_all_objs=`echo $ALL_SRCS \
     | sed -e "s#\([^ ]*\.\)cc#$ABNS_OBJS\/\1o#g" \
           -e "s#\([^ ]*\.\)c#$ABNS_OBJS\/\1o#g"`
+abns_deps=`echo $abns_all_objs \
+    | sed -e "s/  *\([^ ][^ ]*\)/$abns_regex_cont\1/g" \
+          -e "s/\//$abns_regex_dirsep/g"`
 
 cat << END                                                     >> $ABNS_MAKEFILE
-
-build:  binary modules manpage
+build:  binary
 
 binary: $ABNS_OBJS/abyness
 
-$ABNS_OBJS/abyness: 
+$ABNS_OBJS/abyness: $abns_deps
+	\$(LINK) -o $ABNS_OBJS/abyness \\
+	$abns_deps
+END
 
-$abns_all_objs
-    \$(LINK)
+for abns_src in $ALL_SRCS
+do
+    abns_src=`echo $abns_src | sed -e "s/\//\//g"`
+    abns_obj=`echo $abns_src \
+        | sed -e "s#^\(.*\.\)cc\\$#$ABNS_OBJS\/\1o#g" \
+              -e "s#^\(.*\.\)c\\$#$ABNS_OBJS\/\1o#g"`
 
+cat << END                                                >> $ABNS_MAKEFILE
+
+$abns_obj: \$(ALL_DEPS)$abns_cont$abns_src
+	\$(CC) -c \$(CFLAGS) \$(ALL_INCS)$abns_tab-o $abns_obj$abns_tab$abns_src
+END
+
+done
+
+echo "creating Makfile"
+# create Makefile
+cat << END > Makefile
+
+default:    build
+
+clean:
+	rm -rf Makefile $ABNS_OBJS
+
+.PHONY: default clean
+
+build:
+	make -f $ABNS_MAKEFILE
+
+install:
+	make -f $ABNS_MAKEFILE install
+
+.PHONY: build install
 END

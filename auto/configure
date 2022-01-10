@@ -1,3 +1,5 @@
+# configure
+
 . auto/options
 . auto/init
 . auto/sources

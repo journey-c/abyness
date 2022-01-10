@@ -1,3 +1,5 @@
+# command line options
+
 help=no
 
 CC=${CC:-cc}
