@@ -3,9 +3,7 @@
 help=no
 
 CC=${CC:-cc}
-ABNS_OBJS=objs
-
-ABNS_ADDON_SRCS=
+AYN_OBJS=objs
 
 opt=
 
@@ -21,6 +19,7 @@ do
     case "$option" in
         --help)                          help=yes                   ;;
         --with-cc=*)                     CC="$value"                ;;
+        --builddir=*)                    AYN_OBJS="$value"          ;;
     esac
 done
 
@@ -29,7 +28,10 @@ if [ $help = yes ]; then
 cat << END
 
   --help                             print this message
+
   --with-cc=PATH                     set C compiler pathname
+
+  --builddir=DIR                     set build directory
 
 END
 

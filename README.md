@@ -1,5 +1,19 @@
-# lyuling
-Network library of C
 
-## 架构
-主线程监听，n个子线程等待连接
+四层: tcp, udp transport layer
+  |
+  V
+七层: http, https, mail  application layer
+
+server {
+
+}
+
+transport {
+    app {
+        listen 80;
+        servername test.com;
+    }
+    app {
+
+    }
+}

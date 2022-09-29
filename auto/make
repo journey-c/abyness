@@ -1,22 +1,22 @@
 # generate makefile
 
-echo "creating $ABNS_MAKEFILE"
+echo "creating $AYN_MAKEFILE"
 
-mkdir -p $ABNS_OBJS/src
+mkdir -p $AYN_OBJS/src
 
-abns_regex_cont=' \\\
+ayn_regex_cont=' \\\
 	'
-abns_regex_dirsep="\/"
-abns_tab=' \
+ayn_regex_dirsep="\/"
+ayn_tab=' \
 		'
-abns_cont=' \
+ayn_cont=' \
 	'
 
-abns_deps=`echo $ALL_DEPS \
-     | sed -e "s/  *\([^ ][^ ]*\)/$abns_regex_cont\1/g" \
-           -e "s/\//$abns_regex_dirsep/g"`
+ayn_deps=`echo $ALL_DEPS \
+     | sed -e "s/  *\([^ ][^ ]*\)/$ayn_regex_cont\1/g" \
+           -e "s/\//$ayn_regex_dirsep/g"`
 
-cat << END                                                     > $ABNS_MAKEFILE
+cat << END                                                     > $AYN_MAKEFILE
 
 CCCOLOR     = "\033[34m" 
 LINKCOLOR   = "\033[34;1m" 
@@ -29,39 +29,39 @@ CC     = $CC
 LINK   = \$(CC)
 CFLAGS = -pipe  -O -W -Wall -Wpointer-arith -Wno-unused-parameter -Werror -g
 
-ALL_DEPS = $abns_deps
+ALL_DEPS = $ayn_deps
 ALL_INCS = -I src/
 
 END
 
-abns_all_objs=`echo $ALL_SRCS \
-    | sed -e "s#\([^ ]*\.\)cc#$ABNS_OBJS\/\1o#g" \
-          -e "s#\([^ ]*\.\)c#$ABNS_OBJS\/\1o#g"`
-abns_deps=`echo $abns_all_objs \
-    | sed -e "s/  *\([^ ][^ ]*\)/$abns_regex_cont\1/g" \
-          -e "s/\//$abns_regex_dirsep/g"`
+ayn_all_objs=`echo $ALL_SRCS \
+    | sed -e "s#\([^ ]*\.\)cc#$AYN_OBJS\/\1o#g" \
+          -e "s#\([^ ]*\.\)c#$AYN_OBJS\/\1o#g"`
+ayn_deps=`echo $ayn_all_objs \
+    | sed -e "s/  *\([^ ][^ ]*\)/$ayn_regex_cont\1/g" \
+          -e "s/\//$ayn_regex_dirsep/g"`
 
-cat << END                                                     >> $ABNS_MAKEFILE
+cat << END                                                     >> $AYN_MAKEFILE
 build:  binary
 
-binary: $ABNS_OBJS/abyness
+binary: $AYN_OBJS/abyness
 
-$ABNS_OBJS/abyness: $abns_deps
-	\$(LINK) -o $ABNS_OBJS/abyness \\
-	$abns_deps
+$AYN_OBJS/abyness: $ayn_deps
+	\$(LINK) -o $AYN_OBJS/abyness \\
+	$ayn_deps
 END
 
-for abns_src in $ALL_SRCS
+for ayn_src in $ALL_SRCS
 do
-    abns_src=`echo $abns_src | sed -e "s/\//\//g"`
-    abns_obj=`echo $abns_src \
-        | sed -e "s#^\(.*\.\)cc\\$#$ABNS_OBJS\/\1o#g" \
-              -e "s#^\(.*\.\)c\\$#$ABNS_OBJS\/\1o#g"`
+    ayn_src=`echo $ayn_src | sed -e "s/\//\//g"`
+    ayn_obj=`echo $ayn_src \
+        | sed -e "s#^\(.*\.\)cc\\$#$AYN_OBJS\/\1o#g" \
+              -e "s#^\(.*\.\)c\\$#$AYN_OBJS\/\1o#g"`
 
-cat << END                                                >> $ABNS_MAKEFILE
+cat << END                                                >> $AYN_MAKEFILE
 
-$abns_obj: \$(ALL_DEPS)$abns_cont$abns_src
-	\$(CC) -c \$(CFLAGS) \$(ALL_INCS)$abns_tab-o $abns_obj$abns_tab$abns_src
+$ayn_obj: \$(ALL_DEPS)$ayn_cont$ayn_src
+	\$(CC) -c \$(CFLAGS) \$(ALL_INCS)$ayn_tab-o $ayn_obj$ayn_tab$ayn_src
 END
 
 done
@@ -73,15 +73,15 @@ cat << END > Makefile
 default:    build
 
 clean:
-	rm -rf Makefile $ABNS_OBJS
+	rm -rf Makefile $AYN_OBJS
 
 .PHONY: default clean
 
 build:
-	make -f $ABNS_MAKEFILE
+	make -f $AYN_MAKEFILE
 
 install:
-	make -f $ABNS_MAKEFILE install
+	make -f $AYN_MAKEFILE install
 
 .PHONY: build install
 END

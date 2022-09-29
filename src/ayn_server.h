@@ -1,0 +1,4 @@
+#ifndef _AYN_SERVER_H_INCLUDE_
+#define _AYN_SERVER_H_INCLUDE_
+
+#endif /* _AYN_SERVER_H_INCLUDE_ */
