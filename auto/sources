@@ -1,16 +1,20 @@
 # source files
 
 ALL_DEPS="src/abyness.h \
+         src/ayn_buf.h \
          src/ayn_config.h \
          src/ayn_core.h \
          src/ayn_cycle.h \
          src/ayn_files.h \
+         src/ayn_log.h \
          src/ayn_rbtree.h \
          src/ayn_server.h"
 
 ALL_SRCS="src/abyness.c \
+         src/ayn_buf.c \
          src/ayn_config.c \
          src/ayn_cycle.c \
          src/ayn_files.c \
+         src/ayn_log.c \
          src/ayn_rbtree.c \
          src/ayn_server.c"

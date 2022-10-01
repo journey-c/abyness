@@ -5,7 +5,7 @@
 
 struct ayn_file {
 	int fd;
-	struct stat info;
+	struct stat *info;
 };
 
 int ayn_open_file(char *filename, int mode, int create, int access);

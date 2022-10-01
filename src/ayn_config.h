@@ -39,6 +39,6 @@ struct ayn_conf {
 	int(parsehandler);
 };
 
-void ayn_conf_parse(struct ayn_conf *cf, char *filename);
+int ayn_conf_parse(struct ayn_conf *cf, char *filename);
 
 #endif /* _AYN_CONFIG_H_INCLUDE_ */
