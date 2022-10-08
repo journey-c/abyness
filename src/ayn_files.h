@@ -1,10 +1,11 @@
 #ifndef _AYN_FILES_H_INCLUDE_
 #define _AYN_FILES_H_INCLUDE_
 
-#include <ayn_core.h>
+struct stat;
 
 struct ayn_file {
 	int fd;
+	char *name;
 	struct stat *info;
 };
 

@@ -32,7 +32,7 @@ struct ayn_conf_transport {
 };
 
 struct ayn_conf {
-	struct ayn_file *file;
+	struct ayn_buf *rbuf;
 
 	struct ayn_conf_transport **transports;
 
