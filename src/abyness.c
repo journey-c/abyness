@@ -74,6 +74,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	struct ayn_conf *cf = malloc(sizeof(struct ayn_conf));
+	cf->conf_file = malloc(sizeof(struct ayn_file));
 	if (ayn_conf_parse(cf, ayn_conf_file) == -1) {
 		return -1;
 	}

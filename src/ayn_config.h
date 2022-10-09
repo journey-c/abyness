@@ -1,8 +1,10 @@
 #ifndef _AYN_CONFIG_H_INCLUDE_
 #define _AYN_CONFIG_H_INCLUDE_
 
-#define TRANSPORT_TCP "TCP"
-#define TRANSPORT_UDP "UDP"
+#define AYN_TRANSPORT_TCP "TCP"
+#define AYN_TRANSPORT_UDP "UDP"
+
+#define AYN_CONF_BUFFER 4096
 
 struct ayn_conf_location {
 	char *name;
@@ -32,7 +34,7 @@ struct ayn_conf_transport {
 };
 
 struct ayn_conf {
-	struct ayn_buf *rbuf;
+	struct ayn_file *conf_file;
 
 	struct ayn_conf_transport **transports;
 
