@@ -67,10 +67,13 @@ void ayn_show_version_info()
 
 int main(int argc, char **argv)
 {
-	ayn_log_stderr(0, "1", "2", "3", "4");
 	if (ayn_init_option(argc, argv) == -1) {
 		return -1;
 	}
+
+	ayn_log_stderr(0, "%s %d (%c)", "ABCD", 1024, 'c');
+    return 0;
+
 	if (ayn_show_version) {
 		ayn_show_version_info();
 		return 0;

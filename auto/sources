@@ -9,7 +9,8 @@ ALL_DEPS="src/abyness.h \
          src/ayn_files.h \
          src/ayn_log.h \
          src/ayn_rbtree.h \
-         src/ayn_server.h"
+         src/ayn_server.h \
+         src/ayn_string.h"
 
 ALL_SRCS="src/abyness.c \
          src/ayn_buf.c \
@@ -19,4 +20,5 @@ ALL_SRCS="src/abyness.c \
          src/ayn_files.c \
          src/ayn_log.c \
          src/ayn_rbtree.c \
-         src/ayn_server.c"
+         src/ayn_server.c \
+         src/ayn_string.c"

@@ -11,23 +11,18 @@ struct ayn_log *ayn_log_init(char *prefix, char *error_log)
 // errno加到最后
 int ayn_log_stderr(int errno, const char *fmt, ...)
 {
-	int d;
-    unsigned int u;
-    double f;
-	char *s;
-	char c;
-	int64_t i64;
-
 	char errstr[AYN_LOG_MAX_ERROR_STR];
+	char *p, *last;
 	va_list args;
 
+	p = errstr;
+	last = errstr + AYN_LOG_MAX_ERROR_STR;
 	va_start(args, fmt);
-	/* arg = va_arg(args, char *); */
-	/* printf("%s\n", arg); */
+	p = ayn_vsprintf(p, last, fmt, args);
 	va_end(args);
 	/* sprintf(msg, "(%d: %s)", errno, strerror(errno)); */
 
-	return write(STDERR_FILENO, errstr, 0);
+	return write(STDERR_FILENO, errstr, sizeof(errstr));
 }
 
 int ayn_write_stderr(char *text)

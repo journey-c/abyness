@@ -23,5 +23,6 @@
 #include <ayn_log.h>
 #include <ayn_rbtree.h>
 #include <ayn_server.h>
+#include <ayn_string.h>
 
 #endif /* _AYN_CORE_H_ */
