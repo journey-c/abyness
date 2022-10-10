@@ -1,3 +1,4 @@
+#include "ayn_log.h"
 #include <ayn_core.h>
 
 int ayn_show_version;
@@ -66,6 +67,7 @@ void ayn_show_version_info()
 
 int main(int argc, char **argv)
 {
+	ayn_log_stderr(0, "1", "2", "3", "4");
 	if (ayn_init_option(argc, argv) == -1) {
 		return -1;
 	}
@@ -76,6 +78,7 @@ int main(int argc, char **argv)
 	struct ayn_conf *cf = malloc(sizeof(struct ayn_conf));
 	cf->conf_file = malloc(sizeof(struct ayn_file));
 	if (ayn_conf_parse(cf, ayn_conf_file) == -1) {
+		ayn_write_stderr("parse conf file error\n");
 		return -1;
 	}
 	return 0;

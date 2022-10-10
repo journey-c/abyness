@@ -10,12 +10,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
+#include <stdarg.h>
 
 // project
 #include <abyness.h>
 #include <ayn_buf.h>
 #include <ayn_config.h>
 #include <ayn_cycle.h>
+#include <ayn_errno.h>
 #include <ayn_files.h>
 #include <ayn_log.h>
 #include <ayn_rbtree.h>

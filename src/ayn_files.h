@@ -7,7 +7,8 @@ struct ayn_file {
 	int fd;
 	char *name;
 	int offset;
-	struct stat *info;
+	struct stat info;
+	struct ayn_buf *buffer;
 };
 
 int ayn_open_file(char *filename, int mode, int create, int access);
