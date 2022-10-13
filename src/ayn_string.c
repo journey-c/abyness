@@ -5,22 +5,29 @@ struct va_list;
 char *ayn_vsprintf(char *buf, char *last, const char *fmt, va_list args)
 {
 	int align_left;
-	int sign;
+	int plus;
 	char fill_ch;
 	int space;
-	int prefix;
+	int sharp;
 	int width;
 	int precision;
+	int int_w;
+
+	long long _i;
+	char _c;
+	char *_s;
+	long double _f;
 	// %[flags][width][.precision][length]specifier
 	while (*fmt && buf < last) {
 		if (*fmt == '%') {
 			align_left = 0;
-			sign = 0;
+			plus = 0;
 			fill_ch = ' ';
 			space = 0;
-			prefix = 0;
+			sharp = 0;
 			width = 0;
 			precision = 1;
+			int_w = 0;
 			// flags
 			switch (*++fmt) {
 			case '-':
@@ -28,7 +35,7 @@ char *ayn_vsprintf(char *buf, char *last, const char *fmt, va_list args)
 				++fmt;
 				break;
 			case '+':
-				sign = 1;
+				plus = 1;
 				++fmt;
 				break;
 			case ' ':
@@ -38,7 +45,7 @@ char *ayn_vsprintf(char *buf, char *last, const char *fmt, va_list args)
 					++fmt;
 				break;
 			case '#':
-				prefix = 1;
+				sharp = 1;
 				++fmt;
 				break;
 			case '0':
@@ -73,9 +80,54 @@ char *ayn_vsprintf(char *buf, char *last, const char *fmt, va_list args)
 					}
 				}
 			}
-            // length
-
-            // specifier
+			// length
+			switch (*fmt) {
+			case 'h':
+				int_w = 2;
+				++fmt;
+				break;
+			case 'l':
+				int_w = 4;
+				++fmt;
+				break;
+			case 'L':
+				int_w = 8;
+				++fmt;
+				break;
+			default:
+				break;
+			}
+			// specifier
+			switch (*fmt) {
+			// case 'a':
+			// case 'A':
+			// 十六进制浮点数
+			// break;
+			case 'd':
+				_i = va_arg(args, int);
+				break;
+			case 'o':
+				_i = va_arg(args, int);
+				break;
+			case 'x':
+			case 'X':
+				break;
+			case 'u':
+				break;
+			case 'f':
+				break;
+			case 'e':
+			case 'E':
+				break;
+			case 'c':
+				break;
+			case 's':
+				break;
+			case 'p':
+				break;
+			default:
+				break;
+			}
 		} else {
 			*buf++ = *fmt++;
 		}
