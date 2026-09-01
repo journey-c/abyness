@@ -1,0 +1,233 @@
+/*
+ * Typora 保真微调:覆盖 Milkdown Crepe 默认外观,向 Typora 靠拢。
+ * 仅调外观,不改编辑行为。基于并排截图逐项校准。
+ */
+
+/* ---- 字体:与 Typora 一致(标题也用无衬线,而非 Crepe 默认的 Noto Serif) ---- */
+.milkdown {
+  --crepe-font-title: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --crepe-font-default: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --crepe-font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+    Courier, monospace;
+}
+
+/* ---- 正文宽度:与 Typora 一致的居中定宽栏;窗口变窄时平滑过渡到左右各 2 个中文字符(2em)留白 ---- */
+.milkdown .ProseMirror {
+  /* 正文定宽:在原 800px 基础上,左右各加宽 3 个中文字符(共 6em) */
+  --content-width: calc(800px + 6em);
+  padding-top: 16px !important;
+  padding-bottom: 140px !important;
+  padding-left: max(2em, calc((100% - var(--content-width)) / 2)) !important;
+  padding-right: max(2em, calc((100% - var(--content-width)) / 2)) !important;
+}
+
+
+/* 隐藏 CodeMirror 行号 gutter */
+.milkdown .cm-gutters {
+  display: none !important;
+}
+
+/* 去掉当前行/gutter 高亮 */
+.milkdown .cm-activeLine,
+.milkdown .cm-activeLineGutter {
+  background: transparent !important;
+}
+
+/* 长行自动换行,而非横向滚动截断 */
+.milkdown .cm-content,
+.milkdown .cm-line {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}
+.milkdown .cm-scroller {
+  overflow-x: hidden !important;
+}
+
+/* 代码块容器:简约风 —— 近白底 + 浅灰细边框 + 圆角 + 充裕留白 */
+.milkdown .milkdown-code-block {
+  border: 1px solid #e3e3e0;
+  border-radius: 8px;
+  background: #fcfcfc;
+  padding: 6px 4px;
+  margin: 1.8em 0;
+}
+.milkdown .milkdown-code-block .cm-editor {
+  background: transparent;
+}
+.milkdown .milkdown-code-block .cm-content {
+  padding: 2px 0;
+}
+
+/* 行内代码:描边小框(而非灰色实底),更简约 */
+.milkdown .ProseMirror code:not(.milkdown-code-block code) {
+  background: transparent !important;
+  border: 1px solid #e3e3e0;
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 0.92em;
+}
+
+/* ---- 渲染间距:贴近 Typora 默认,紧凑而有层次 ---- */
+.milkdown .ProseMirror p {
+  margin: 0.35em 0;
+  line-height: 1.4;
+}
+.milkdown .ProseMirror h1,
+.milkdown .ProseMirror h2,
+.milkdown .ProseMirror h3,
+.milkdown .ProseMirror h4,
+.milkdown .ProseMirror h5,
+.milkdown .ProseMirror h6 {
+  margin-top: 1em;
+  margin-bottom: 0.4em;
+  line-height: 1.25;
+}
+.milkdown .ProseMirror ul,
+.milkdown .ProseMirror ol {
+  margin: 0.35em 0;
+}
+.milkdown .ProseMirror li {
+  margin: 0.08em 0;
+  line-height: 1.4;
+}
+.milkdown .ProseMirror li p {
+  margin: 0 0;
+  line-height: 1.4;
+}
+.milkdown .ProseMirror blockquote {
+  margin: 0.6em 0;
+}
+.milkdown .ProseMirror hr {
+  margin: 1.2em 0;
+}
+
+/* ---- 列表缩进:顶层列表(上级不是列表)左侧不额外缩进 ----
+ * Crepe 用自定义节点(.milkdown-list-item-block + flex marker)渲染列表项,
+ * 标记本身已占位;GitHub 主题的 padding-left:2em 是多余缩进,去掉后
+ * 顶层列表贴左,嵌套列表由父项 marker 自然产生缩进。 */
+.milkdown .ProseMirror ul,
+.milkdown .ProseMirror ol {
+  padding-left: 0;
+}
+
+/* ---- 去掉表格光标悬浮的行/列拖拽手柄与加号按钮(改用右键菜单/直接编辑) ---- */
+.milkdown .milkdown-table-block .cell-handle,
+.milkdown .milkdown-table-block .line-handle,
+.milkdown .milkdown-table-block .handle {
+  display: none !important;
+}
+
+/* ---- 代码块工具区:去掉复制按钮;语言标签仅编辑(选中)时显示,浮在代码块外部右下角不占排版 ---- */
+/* 复制/预览等按钮组整体移除 */
+.milkdown .milkdown-code-block .tools-button-group {
+  display: none !important;
+}
+/* 代码块需要相对定位,承载绝对定位的语言标签 */
+.milkdown .milkdown-code-block {
+  position: relative;
+}
+/* 语言标签:默认隐藏;绝对定位到代码块下方右侧(块外,不占排版) */
+.milkdown .milkdown-code-block .language-button {
+  position: absolute;
+  right: 0;
+  bottom: -26px;
+  margin: 0 !important;
+  padding: 2px 10px !important;
+  background: #f6f8fa !important;
+  color: #59636e !important;
+  border: 1px solid #e3e3e0;
+  border-radius: 6px;
+  font-size: 12px !important;
+  font-weight: 600;
+  opacity: 0 !important;
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.15s ease;
+}
+/* 仅当代码块处于编辑态时显示语言标签:
+ * - .selected:整块被选中(NodeSelection)
+ * - :focus-within:光标进入代码块编辑(CodeMirror 获得焦点)——这才是「点进去编辑」的常态 */
+.milkdown .milkdown-code-block.selected .language-button,
+.milkdown .milkdown-code-block:focus-within .language-button {
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+/* 顶部 tools 行不再占位(按钮组已移除、语言标签已绝对定位) */
+.milkdown .milkdown-code-block .tools {
+  min-height: 0;
+}
+
+/* ---- 表格:GitHub 风 —— 表头浅灰底、细灰边框、隔行斑马纹 ---- */
+.milkdown .ProseMirror table {
+  margin: 1em 0;
+  border-collapse: collapse;
+  border: 1px solid #d0d7de;
+}
+.milkdown .ProseMirror th,
+.milkdown .ProseMirror td {
+  border: 1px solid #d0d7de;
+  padding: 0 14px;
+  line-height: 1.2;
+}
+/* 单元格内段落去掉上下外边距,进一步压低行高 */
+.milkdown .ProseMirror th p,
+.milkdown .ProseMirror td p {
+  margin: 0 !important;
+  line-height: 1.2;
+}
+/* 光标:Crepe 默认启用 prosemirror-virtual-cursor(全局 caret-color:transparent
+ * + 自绘竖条)。它在表格单元格里会与原生光标叠加,出现"两个光标"。
+ * 直接全局禁用虚拟光标,统一用原生 caret——所有块(含表格)只显示一个光标。 */
+.milkdown .ProseMirror.virtual-cursor-enabled {
+  caret-color: auto;
+}
+.milkdown .ProseMirror .prosemirror-virtual-cursor {
+  display: none !important;
+}
+/* 深浅相间:表头(第1行)及其后奇数行为深色,偶数行为白色 */
+.milkdown .ProseMirror table tr:nth-child(odd) {
+  background: #f0f2f4;
+}
+.milkdown .ProseMirror table tr:nth-child(even) {
+  background: #ffffff;
+}
+.milkdown .ProseMirror thead th,
+.milkdown .ProseMirror tr:first-child th {
+  background: #f0f2f4;
+  font-weight: 600;
+}
+
+/* ---- 深色模式 ---- */
+@media (prefers-color-scheme: dark) {
+  .milkdown .milkdown-code-block {
+    border-color: #2c2c2a;
+    background: #1b1b1a;
+  }
+  .milkdown .milkdown-code-block .language-button {
+    background: #161b22 !important;
+    color: #9198a1 !important;
+    border-color: #30363d;
+  }
+  .milkdown .ProseMirror code:not(.milkdown-code-block code) {
+    border-color: #2c2c2a;
+  }
+  .milkdown .ProseMirror table,
+  .milkdown .ProseMirror th,
+  .milkdown .ProseMirror td {
+    border-color: #30363d;
+  }
+  .milkdown .ProseMirror table tr:nth-child(odd) {
+    background: #161b22;
+  }
+  .milkdown .ProseMirror table tr:nth-child(even) {
+    background: #0d1117;
+  }
+  .milkdown .ProseMirror thead th,
+  .milkdown .ProseMirror tr:first-child th {
+    background: #161b22;
+  }
+}

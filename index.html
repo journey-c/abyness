@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Abyness</title>
+    <!-- 关键内联样式:窗口一出现就画对底色,并在 UI 就绪前隐藏,
+         避免样式/编辑器(通过 JS 加载)尚未生效时闪出未渲染的原始文字(FOUC)。 -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #fdfdfc;
+      }
+      #app {
+        opacity: 0;
+        transition: opacity 0.12s ease;
+      }
+      #app.ready {
+        opacity: 1;
+      }
+      @media (prefers-color-scheme: dark) {
+        html,
+        body {
+          background: #191918;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 左侧文件树侧边栏 -->
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <button id="view-toggle" class="sb-icon-btn" title="切换大纲">
+            <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 6h12M4 10h12M4 14h12"/></svg>
+          </button>
+          <span class="sidebar-title">文件</span>
+          <button id="search-btn" class="sb-icon-btn" title="搜索">
+            <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13.5 13.5 17 17"/></svg>
+          </button>
+        </div>
+        <!-- 搜索栏(激活时替换标题栏) -->
+        <div id="search-bar" class="hidden">
+          <button id="search-back" class="sb-icon-btn" title="返回">
+            <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 10l5 5M6 10h9"/></svg>
+          </button>
+          <input id="search-input" type="text" placeholder="查找" spellcheck="false" />
+          <button id="opt-case" class="search-opt" title="区分大小写">Aa</button>
+          <button id="opt-word" class="search-opt" title="查找整个单词">
+            <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 6v8M16 6v8"/><path d="M6 13c0-2.5 1.3-4 3-4s3 1.5 3 4M12 9.5V13"/></svg>
+          </button>
+          <button id="opt-regex" class="search-opt" title="正则表达式">(.*)</button>
+        </div>
+        <!-- 文件树视图 -->
+        <div id="filetree"></div>
+        <!-- 大纲视图(切换显示) -->
+        <div id="toc-panel" class="hidden">
+          <div id="toc-list"></div>
+        </div>
+        <!-- 搜索结果视图 -->
+        <div id="search-results" class="hidden"></div>
+      </aside>
+      <!-- 右侧:顶栏 + 单一所见即所得编辑面 + 状态栏 -->
+      <main id="main">
+        <div id="topbar" data-tauri-drag-region>
+          <span id="doc-title" title="点击重命名"></span>
+          <div class="topbar-actions">
+            <span id="word-count" title="词数统计">0 词</span>
+            <button id="toc-toggle" class="icon-btn" title="大纲">
+              <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M7 6h9M7 10h9M7 14h9"/><circle cx="3.5" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="3.5" cy="14" r="1" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <button id="sidebar-toggle" class="icon-btn" title="切换侧边栏">
+              <svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M8 3.5v13"/><rect x="2.5" y="3.5" width="5.5" height="13" rx="2" fill="currentColor" stroke="none" opacity="0.85"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="editor-wrap">
+          <div id="editor"></div>
+          <!-- 大纲悬浮窗(点击顶栏大纲按钮弹出) -->
+          <div id="toc-popup" class="hidden">
+            <div class="toc-popup-title">大纲</div>
+            <div id="toc-popup-list"></div>
+          </div>
+          <!-- 外部改动提示条(底部) -->
+          <div id="reload-bar" class="hidden">
+            <span class="reload-msg">此文件已被其他程序修改。</span>
+            <div class="reload-actions">
+              <button id="reload-yes" class="reload-btn primary">重新加载</button>
+              <button id="reload-no" class="reload-btn">忽略</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

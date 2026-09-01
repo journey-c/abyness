@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <!-- Markdown 徽标:圆角矩形描边 + M + 向下箭头,近似图 #20 -->
+  <rect x="4" y="8.5" width="28" height="19" rx="3" ry="3" fill="none" stroke="#8a8f98" stroke-width="2"/>
+  <g fill="none" stroke="#8a8f98" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="9,23 9,13 13,17 17,13 17,23"/>
+    <polyline points="22,13 22,21"/>
+    <polyline points="19,18 22,21.5 25,18"/>
+  </g>
+</svg>

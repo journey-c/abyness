@@ -1,0 +1,891 @@
+/* 应用外壳:左侧文件树 + 右侧(顶栏 + 单一编辑面 + 状态栏) */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", Helvetica, Arial, sans-serif;
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #fdfdfc;
+}
+
+/* ---- 侧边栏 ---- */
+#sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100%;
+  background: #fdfdfc; /* 与主区同底色,消除色差,仅用细边框分隔 */
+  border-right: 1px solid #ececea;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.18s ease;
+}
+
+/* 侧栏隐藏 */
+#app.sidebar-hidden #sidebar {
+  margin-left: -260px;
+}
+
+/* 侧栏隐藏后,主区顶栏左移到窗口左上角,会被 macOS 交通灯按钮遮住标题。
+ * 此时给顶栏留出交通灯宽度的左内边距。 */
+#app.sidebar-hidden #topbar {
+  padding-left: 78px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 顶部留出交通灯(红黄绿)按钮的空间 */
+  padding: 30px 12px 8px;
+  font-size: 12px;
+  color: #9a9a94;
+}
+/* 进入搜索时隐藏标题头部,让搜索栏占据同一行位置(而非另起一行) */
+.sidebar-header.hidden {
+  display: none;
+}
+
+.sidebar-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #6a6a64;
+  font-size: 14px;
+}
+
+/* 侧栏头部图标按钮(切换视图 / 搜索 / 返回) */
+.sb-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: none;
+  background: transparent;
+  color: #8a8a84;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+.sb-icon-btn:hover {
+  background: #ececea;
+  color: #4a4a46;
+}
+
+/* 搜索栏(激活时替换头部) */
+#search-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 30px 10px 8px;
+}
+#search-bar.hidden {
+  display: none;
+}
+#search-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 13px;
+  color: #1a1a18;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid #3b82f6;
+  padding: 3px 2px;
+  margin: 0;
+  outline: none;
+}
+/* 激活搜索时:输入框(含光标 + 下划线)以右侧为锚点从右向左推出 */
+#search-bar:not(.hidden) #search-input {
+  animation: search-underline-in 0.14s ease-out both;
+}
+@keyframes search-underline-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+#search-input {
+  transform-origin: right center;
+}
+#search-input::placeholder {
+  color: #b5b5af;
+}
+.search-opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  flex: none;
+  border: none;
+  background: transparent;
+  color: #8a8a84;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.search-opt:hover {
+  background: #ececea;
+  color: #4a4a46;
+}
+.search-opt.active {
+  background: #dbe6ff;
+  color: #2f6fed;
+}
+
+/* 搜索结果面板 */
+#search-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 6px 20px;
+}
+#search-results.hidden {
+  display: none;
+}
+.search-group {
+  margin-bottom: 8px;
+}
+.search-file {
+  padding: 4px 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #4a4a46;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.search-file:hover {
+  background: #f0f0ec;
+}
+.search-line {
+  display: flex;
+  gap: 8px;
+  padding: 2px 8px 2px 14px;
+  font-size: 12px;
+  color: #7a7a74;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.search-line:hover {
+  background: #f0f0ec;
+  color: #33332f;
+}
+.search-lineno {
+  flex: none;
+  min-width: 26px;
+  text-align: right;
+  color: #b5b5af;
+  font-variant-numeric: tabular-nums;
+}
+.search-linetext {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.search-empty {
+  padding: 16px 10px;
+  text-align: center;
+  color: #b5b5af;
+  font-size: 12px;
+}
+.search-error {
+  color: #d06666;
+}
+
+#filetree {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+#filetree.hidden {
+  display: none;
+}
+
+/* 大纲视图(侧栏内) */
+#toc-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 6px 20px;
+}
+#toc-panel.hidden {
+  display: none;
+}
+
+/* 文件树使用 div 结构(非 ul/li),从根本上杜绝 WebKit 的列表圆点 */
+.tree-list {
+  margin: 0;
+  padding: 0;
+}
+
+.tree-item {
+  margin: 0;
+  padding: 0;
+}
+
+.tree-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8a84;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+.tree-icon svg {
+  display: block;
+}
+
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  font-size: 13px;
+  color: #4a4a46;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tree-row:hover {
+  background: #f0f0ec;
+}
+.tree-row.active {
+  background: #e6e6e0;
+  font-weight: 500;
+}
+
+/* 展开/折叠三角:默认指向右(折叠),展开时旋转 90° 指向下 */
+.tree-caret {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  /* 缩小三角与图标间距:让三角贴近文件夹图标 */
+  margin-right: -2px;
+  color: #9a9a94;
+  flex: none;
+  transition: transform 0.12s ease;
+}
+.tree-caret.expanded {
+  transform: rotate(90deg);
+}
+.tree-caret svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 内联重命名输入框:占满剩余宽度,视觉贴合行样式 */
+.tree-rename-input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: #1a1a18;
+  background: #fff;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 0;
+  outline: none;
+}
+
+/* ---- 主区 ---- */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+}
+
+/* 顶栏:文档标题 + 词数 + TOC/侧栏按钮 */
+#topbar {
+  height: 40px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 13px;
+  color: #6a6a64;
+  background: #fff; /* 与编辑区同色,消除标题栏色差 */
+  /* 与侧栏 margin 动画同步过渡,避免关/开侧栏时标题位置跳变闪烁 */
+  transition: padding-left 0.18s ease;
+}
+
+#doc-title {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+#doc-title:hover {
+  background: #f0f0ec;
+}
+
+/* 标题栏就地重命名输入框:样式贴合标题文字,位置与标题一致 */
+.doc-title-input {
+  font: inherit;
+  font-weight: 500;
+  color: #1a1a18;
+  background: #fff;
+  border: 1px solid #3b82f6;
+  border-radius: 5px;
+  padding: 2px 6px;
+  margin: 0;
+  outline: none;
+  min-width: 160px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  /* 默认隐藏,鼠标靠近顶栏时淡入 */
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+#topbar:hover .topbar-actions {
+  opacity: 1;
+}
+
+#word-count {
+  font-size: 12px;
+  color: #9a9a94;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: #8a8a84;
+  font-size: 15px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.icon-btn:hover {
+  background: #ececea;
+  color: #4a4a46;
+}
+
+/* 编辑区容器(相对定位,承载 TOC 悬浮窗) */
+#editor-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+}
+
+#editor {
+  height: 100%;
+  overflow-y: auto;
+  background: #fff;
+}
+
+/* Crepe 内容:满宽,真正的左右留白由 .ProseMirror 控制(见 typora-tune.css) */
+#editor .milkdown {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- 大纲悬浮窗(顶栏「大纲」按钮弹出,浮在正文右上角) ---- */
+#toc-popup {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  width: 260px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e5e5e2;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  padding: 8px;
+  z-index: 30;
+}
+#toc-popup.hidden {
+  display: none;
+}
+.toc-popup-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #9a9a94;
+  padding: 2px 8px 8px;
+}
+.toc-popup-empty {
+  padding: 8px;
+  font-size: 13px;
+  color: #b5b5af;
+}
+
+/* ---- 大纲(侧栏内)条目 ---- */
+.toc-item {
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: #55554f;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+  font-size: 13px;
+}
+.toc-item:hover {
+  background: #f0f0ec;
+  color: #1a1a18;
+}
+/* 一级标题略加重,二级起逐级变淡变小,形成层级感 */
+.toc-item.toc-h1 {
+  font-weight: 600;
+  color: #33332f;
+}
+.toc-item.toc-h3,
+.toc-item.toc-h4,
+.toc-item.toc-h5,
+.toc-item.toc-h6 {
+  font-size: 12.5px;
+  color: #7a7a74;
+}
+.toc-empty {
+  padding: 10px;
+  text-align: center;
+  color: #b5b5af;
+  font-size: 12px;
+}
+
+/* ---- 文件树右键上下文菜单 ---- */
+.tree-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 168px;
+  padding: 4px;
+  background: #ffffff;
+  border: 1px solid #e2e2de;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
+  font-size: 13px;
+  color: #33332f;
+}
+.tree-menu-item {
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tree-menu-item:hover {
+  background: #ececea;
+}
+
+/* ---- 正文右键菜单(macOS 风格,带子菜单) ---- */
+.ctx-menu {
+  position: fixed;
+  z-index: 1200;
+  min-width: 208px;
+  padding: 5px;
+  background: #ffffff;
+  border: 0.5px solid rgba(0, 0, 0, 0.14);
+  border-radius: 9px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.18);
+  font-size: 13.5px;
+  color: #1f1f1d;
+  user-select: none;
+}
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: default;
+  white-space: nowrap;
+}
+.ctx-item:hover:not(.disabled) {
+  background: #2f6fed;
+  color: #ffffff;
+}
+.ctx-item.disabled {
+  color: #b9b9b3;
+  cursor: default;
+}
+.ctx-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  flex: 0 0 17px;
+  color: inherit;
+}
+.ctx-icon svg {
+  display: block;
+}
+.ctx-label {
+  flex: 1 1 auto;
+}
+.ctx-tail {
+  margin-left: 22px;
+  font-size: 12.5px;
+  color: #9a9a94;
+}
+.ctx-item:hover:not(.disabled) .ctx-tail {
+  color: rgba(255, 255, 255, 0.85);
+}
+.ctx-item.has-sub .ctx-tail {
+  margin-left: 16px;
+  font-size: 15px;
+  color: #6a6a64;
+}
+.ctx-item:hover.has-sub .ctx-tail {
+  color: #ffffff;
+}
+.ctx-sep {
+  height: 1px;
+  margin: 5px 8px;
+  background: #e6e6e2;
+}
+
+/* ---- 表格编辑工具条(点击表格时悬浮在其左上角) ---- */
+.tbl-toolbar {
+  position: fixed;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 5px;
+  background: #ffffff;
+  border: 1px solid #e2e2de;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+}
+.tbl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  color: #4a4a46;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+.tbl-btn:hover {
+  background: #ececea;
+  color: #1f1f1d;
+}
+.tbl-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: #e2e2de;
+}
+
+/* 尺寸选择面板 */
+.tbl-size-panel {
+  position: fixed;
+  z-index: 1120;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #e2e2de;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+.tbl-size-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 18px);
+  grid-auto-rows: 18px;
+  gap: 3px;
+}
+.tbl-size-cell {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #dcdcd8;
+  border-radius: 3px;
+  background: #f6f6f4;
+  cursor: pointer;
+}
+.tbl-size-cell.on {
+  background: #b9c8f5;
+  border-color: #6f8ee8;
+}
+.tbl-size-nums {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: #6a6a64;
+}
+.tbl-size-nums input {
+  width: 44px;
+  text-align: center;
+  font: inherit;
+  padding: 3px 4px;
+  border: 1px solid #d8d8d4;
+  border-radius: 5px;
+  outline: none;
+}
+.tbl-size-nums input:focus {
+  border-color: #3b82f6;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tbl-toolbar {
+    background: #232321;
+    border-color: #3a3a37;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+  .tbl-btn {
+    color: #c1c1bc;
+  }
+  .tbl-btn:hover {
+    background: #333330;
+    color: #f0f0ec;
+  }
+  .tbl-sep {
+    background: #3a3a37;
+  }
+  .tbl-size-panel {
+    background: #232321;
+    border-color: #3a3a37;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  }
+  .tbl-size-cell {
+    background: #1e1e1c;
+    border-color: #3a3a37;
+  }
+  .tbl-size-cell.on {
+    background: #3b4a86;
+    border-color: #5a6fc0;
+  }
+  .tbl-size-nums {
+    color: #c1c1bc;
+  }
+  .tbl-size-nums input {
+    background: #1e1e1c;
+    border-color: #3a3a37;
+    color: #f0f0ec;
+  }
+}
+
+/* ---- 外部改动提示条(底部悬浮) ---- */
+#reload-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #2b2b28;
+  color: #f2f2ee;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  z-index: 900;
+}
+#reload-bar.hidden {
+  display: none;
+}
+.reload-actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.reload-btn {
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  background: #4a4a46;
+  color: #f2f2ee;
+}
+.reload-btn:hover {
+  background: #5a5a55;
+}
+.reload-btn.primary {
+  background: #3b82f6;
+  color: #fff;
+}
+.reload-btn.primary:hover {
+  background: #2f6fe0;
+}
+
+/* ---- 深色模式 ---- */
+@media (prefers-color-scheme: dark) {
+  #app,
+  #sidebar {
+    background: #191918;
+  }
+  #topbar {
+    background: #151514;
+  }
+  #sidebar {
+    border-right-color: #2c2c2a;
+  }
+  .tree-row {
+    color: #c1c1bc;
+  }
+  .tree-row:hover {
+    background: #262624;
+  }
+  .tree-row.active {
+    background: #333330;
+  }
+  .icon-btn:hover {
+    background: #2c2c2a;
+    color: #d8d8d2;
+  }
+  #editor-wrap,
+  #editor {
+    background: #151514;
+  }
+  #toc-popup {
+    background: #1b1b1a;
+    border-color: #2c2c2a;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  }
+  .toc-item {
+    color: #c1c1bc;
+  }
+  .toc-item:hover {
+    background: #262624;
+    color: #f0f0ec;
+  }
+  .toc-item.toc-h1 {
+    color: #e6e6e0;
+  }
+  .toc-item.toc-h3,
+  .toc-item.toc-h4,
+  .toc-item.toc-h5,
+  .toc-item.toc-h6 {
+    color: #8a8a84;
+  }
+  .toc-empty {
+    color: #6a6a64;
+  }
+  .sidebar-title {
+    color: #c1c1bc;
+  }
+  .sb-icon-btn {
+    color: #8a8a84;
+  }
+  .sb-icon-btn:hover {
+    background: #2c2c2a;
+    color: #d8d8d2;
+  }
+  #search-input {
+    color: #f0f0ec;
+  }
+  .search-opt {
+    color: #8a8a84;
+  }
+  .search-opt:hover {
+    background: #2c2c2a;
+    color: #d8d8d2;
+  }
+  .search-opt.active {
+    background: #24365e;
+    color: #7aa2f7;
+  }
+  .search-file {
+    color: #c1c1bc;
+  }
+  .search-file:hover {
+    background: #262624;
+  }
+  .search-line {
+    color: #8a8a84;
+  }
+  .search-line:hover {
+    background: #262624;
+    color: #e6e6e0;
+  }
+  .search-lineno {
+    color: #5a5a55;
+  }
+  .tree-menu {
+    background: #232321;
+    border: 1px solid #3a3a37;
+    color: #d8d8d2;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  }
+  .tree-menu-item:hover {
+    background: #333330;
+  }
+  .ctx-menu {
+    background: #262624;
+    border: 0.5px solid rgba(255, 255, 255, 0.12);
+    color: #e8e8e2;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+  }
+  .ctx-item:hover:not(.disabled) {
+    background: #2f6fed;
+    color: #ffffff;
+  }
+  .ctx-item.disabled {
+    color: #6a6a64;
+  }
+  .ctx-tail {
+    color: #7a7a74;
+  }
+  .ctx-item.has-sub .ctx-tail {
+    color: #9a9a94;
+  }
+  .ctx-sep {
+    background: #3a3a37;
+  }
+  #doc-title:hover {
+    background: #262624;
+  }
+  .tree-rename-input {
+    color: #f0f0ec;
+    background: #1e1e1c;
+    border-color: #3b82f6;
+  }
+  .doc-title-input {
+    color: #f0f0ec;
+    background: #1e1e1c;
+    border-color: #3b82f6;
+  }
+}

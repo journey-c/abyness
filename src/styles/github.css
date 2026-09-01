@@ -1,0 +1,187 @@
+/*
+ * GitHub Markdown 主题(严格按官方 github-markdown-css 规范值)。
+ * 作用域限定在 .milkdown .ProseMirror(正文内容),覆盖 Crepe frame 主题,
+ * 使主页面渲染与 GitHub 一模一样。间距/表格已在 typora-tune.css,这里补齐
+ * 颜色、字号、字重、边框等规范细节。必须在 typora-tune.css 之后导入。
+ */
+
+.milkdown .ProseMirror {
+  color: #1f2328;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+    Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* ---- 标题:GitHub 字号 / 字重 / 分隔线 ---- */
+.milkdown .ProseMirror h1,
+.milkdown .ProseMirror h2,
+.milkdown .ProseMirror h3,
+.milkdown .ProseMirror h4,
+.milkdown .ProseMirror h5,
+.milkdown .ProseMirror h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f2328;
+}
+.milkdown .ProseMirror h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #d1d9e0;
+}
+.milkdown .ProseMirror h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #d1d9e0;
+}
+.milkdown .ProseMirror h3 {
+  font-size: 1.25em;
+}
+.milkdown .ProseMirror h4 {
+  font-size: 1em;
+}
+.milkdown .ProseMirror h5 {
+  font-size: 0.875em;
+}
+.milkdown .ProseMirror h6 {
+  font-size: 0.85em;
+  color: #59636e;
+}
+
+/* ---- 链接 ---- */
+.milkdown .ProseMirror a {
+  color: #0969da;
+  text-decoration: none;
+}
+.milkdown .ProseMirror a:hover {
+  text-decoration: underline;
+}
+
+/* ---- 引用块 ---- */
+.milkdown .ProseMirror blockquote {
+  padding: 0 1em;
+  color: #59636e;
+  border-left: 0.25em solid #d1d9e0;
+}
+
+/* ---- 分隔线 ---- */
+.milkdown .ProseMirror hr {
+  height: 0.25em;
+  padding: 0;
+  background-color: #d1d9e0;
+  border: 0;
+}
+
+/* ---- 列表缩进:Crepe 自定义列表节点已用 flex marker 占位并产生嵌套缩进,
+ * 顶层列表(上级非列表)不再额外左缩进,避免整块右移。 ---- */
+.milkdown .ProseMirror ul,
+.milkdown .ProseMirror ol {
+  padding-left: 0;
+}
+
+/* ---- 行内代码:GitHub 规范(浅灰底、无边框) ---- */
+.milkdown .ProseMirror code:not(.milkdown-code-block code) {
+  background: rgba(129, 139, 152, 0.12) !important;
+  border: 0 !important;
+  border-radius: 6px;
+  padding: 0.2em 0.4em !important;
+  font-size: 85%;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+/* ---- 代码块:GitHub 规范(#f6f8fa 底、无边框、圆角) ---- */
+.milkdown .milkdown-code-block {
+  background: #f6f8fa !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+  font-size: 85%;
+}
+.milkdown .milkdown-code-block .cm-editor {
+  background: transparent !important;
+}
+
+/* ---- 表格:GitHub 规范 ---- */
+.milkdown .ProseMirror table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 0;
+}
+.milkdown .ProseMirror th,
+.milkdown .ProseMirror td {
+  padding: 4px 13px;
+  border: 1px solid #d1d9e0;
+}
+/* 深浅相间:第1行(表头)起,奇数行深、偶数行白 */
+.milkdown .ProseMirror tr:nth-child(odd) {
+  background-color: #f0f2f4;
+  border-top: 1px solid #d1d9e0;
+}
+.milkdown .ProseMirror tr:nth-child(even) {
+  background-color: #ffffff;
+  border-top: 1px solid #d1d9e0;
+}
+.milkdown .ProseMirror thead th,
+.milkdown .ProseMirror tr:first-child th {
+  font-weight: 600;
+  background-color: #f0f2f4;
+}
+
+/* ---- 图片 ---- */
+.milkdown .ProseMirror img {
+  max-width: 100%;
+  background-color: #ffffff;
+}
+
+/* ---- 深色模式:GitHub dark 规范值 ---- */
+@media (prefers-color-scheme: dark) {
+  .milkdown .ProseMirror,
+  .milkdown .ProseMirror h1,
+  .milkdown .ProseMirror h2,
+  .milkdown .ProseMirror h3,
+  .milkdown .ProseMirror h4,
+  .milkdown .ProseMirror h5 {
+    color: #f0f6fc;
+  }
+  .milkdown .ProseMirror h6 {
+    color: #9198a1;
+  }
+  .milkdown .ProseMirror h1,
+  .milkdown .ProseMirror h2 {
+    border-bottom-color: #3d444d;
+  }
+  .milkdown .ProseMirror a {
+    color: #4493f8;
+  }
+  .milkdown .ProseMirror blockquote {
+    color: #9198a1;
+    border-left-color: #3d444d;
+  }
+  .milkdown .ProseMirror hr {
+    background-color: #3d444d;
+  }
+  .milkdown .ProseMirror code:not(.milkdown-code-block code) {
+    background: rgba(101, 108, 118, 0.2) !important;
+  }
+  .milkdown .milkdown-code-block {
+    background: #151b23 !important;
+  }
+  .milkdown .ProseMirror th,
+  .milkdown .ProseMirror td {
+    border-color: #3d444d;
+  }
+  .milkdown .ProseMirror tr:nth-child(odd) {
+    background-color: #161b22;
+    border-top-color: #3d444d;
+  }
+  .milkdown .ProseMirror tr:nth-child(even) {
+    background-color: #0d1117;
+    border-top-color: #3d444d;
+  }
+  .milkdown .ProseMirror thead th,
+  .milkdown .ProseMirror tr:first-child th {
+    background-color: #161b22;
+  }
+}

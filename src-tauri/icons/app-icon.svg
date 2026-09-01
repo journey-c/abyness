@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- 极淡的自上而下渐变,几乎纯白,仅给边缘一点层次,避免死白 -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f2f3f5"/>
+    </linearGradient>
+  </defs>
+  <!-- 纯白圆角方块:极简底 -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228" fill="url(#bg)"/>
+  <!-- 内描边:白底图标常见的细边,增强轮廓不至于糊在浅色 Dock 背景里 -->
+  <rect x="6" y="6" width="1012" height="1012" rx="222" ry="222" fill="none" stroke="#e6e8ec" stroke-width="6"/>
+  <!-- 两道向下的雪佛龙,由深到浅;整体缩小并居中,四周留足白边 -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="48">
+    <polyline points="400,400 512,496 624,400" stroke="#2b2f38"/>
+    <polyline points="400,528 512,624 624,528" stroke="#b7bcc6"/>
+  </g>
+</svg>
