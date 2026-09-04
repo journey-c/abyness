@@ -456,6 +456,156 @@ body {
   color: #b5b5af;
 }
 
+/* ---- 正文内查找/替换浮动面板 ---- */
+#find-panel {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  width: 360px;
+  max-width: calc(100% - 32px);
+  background: #fff;
+  border: 1px solid #e5e5e2;
+  border-radius: 12px;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.16);
+  padding: 12px 16px 14px;
+  z-index: 40;
+}
+#find-panel.hidden {
+  display: none;
+}
+.find-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ececea;
+  margin-bottom: 12px;
+}
+.find-tabs {
+  display: flex;
+  gap: 22px;
+}
+.find-tab {
+  position: relative;
+  padding: 4px 0 10px;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 600;
+  color: #8a8a84;
+  cursor: pointer;
+}
+.find-tab.active {
+  color: #2f6fed;
+}
+.find-tab.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: #2f6fed;
+}
+.find-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 6px;
+  border: none;
+  background: transparent;
+  color: #9a9a94;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.find-close:hover {
+  background: #ececea;
+  color: #55554f;
+}
+.find-row {
+  position: relative;
+  margin-bottom: 10px;
+}
+.find-row.hidden {
+  display: none;
+}
+.find-row input {
+  width: 100%;
+  font: inherit;
+  font-size: 14px;
+  padding: 9px 52px 9px 12px;
+  color: #33332f;
+  background: #fff;
+  border: 1px solid #cfd4dc;
+  border-radius: 8px;
+  outline: none;
+}
+.find-row input:focus {
+  border-color: #2f6fed;
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.14);
+}
+.find-row input::placeholder {
+  color: #b5b5af;
+}
+.find-counter {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: #9a9a94;
+  pointer-events: none;
+}
+.find-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+.find-btn {
+  min-width: 74px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: #55554f;
+  background: #fff;
+  border: 1px solid #d8dce3;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.find-btn:hover:not(:disabled) {
+  background: #f2f3f5;
+}
+.find-btn:disabled {
+  color: #c2c2bd;
+  cursor: default;
+}
+/* 替换按钮仅在替换模式显示 */
+.find-replace-only {
+  display: none;
+}
+#find-panel.replace-mode .find-replace-only {
+  display: inline-block;
+}
+
+/* 正文匹配高亮(ProseMirror inline 装饰) */
+.find-match {
+  background: rgba(255, 214, 0, 0.42);
+  border-radius: 2px;
+}
+.find-match-current {
+  background: #ff9632;
+  color: #1f1f1d;
+}
+/* 代码块内匹配高亮(CodeMirror 装饰;PM inline 装饰无法进入代码块 DOM) */
+.cm-find-match {
+  background: rgba(255, 214, 0, 0.42);
+  border-radius: 2px;
+}
+
+
 /* ---- 大纲(侧栏内)条目 ---- */
 .toc-item {
   padding: 5px 10px;
@@ -887,5 +1037,65 @@ body {
     color: #f0f0ec;
     background: #1e1e1c;
     border-color: #3b82f6;
+  }
+  #find-panel {
+    background: #232321;
+    border-color: #3a3a37;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+  }
+  .find-head {
+    border-bottom-color: #3a3a37;
+  }
+  .find-tab {
+    color: #8a8a84;
+  }
+  .find-tab.active {
+    color: #7aa2f7;
+  }
+  .find-tab.active::after {
+    background: #7aa2f7;
+  }
+  .find-close {
+    color: #8a8a84;
+  }
+  .find-close:hover {
+    background: #333330;
+    color: #d8d8d2;
+  }
+  .find-row input {
+    color: #f0f0ec;
+    background: #1e1e1c;
+    border-color: #3a3a37;
+  }
+  .find-row input:focus {
+    border-color: #7aa2f7;
+    box-shadow: 0 0 0 3px rgba(122, 162, 247, 0.18);
+  }
+  .find-row input::placeholder {
+    color: #6a6a64;
+  }
+  .find-counter {
+    color: #8a8a84;
+  }
+  .find-btn {
+    color: #d8d8d2;
+    background: #262624;
+    border-color: #3a3a37;
+  }
+  .find-btn:hover:not(:disabled) {
+    background: #333330;
+  }
+  .find-btn:disabled {
+    color: #5a5a55;
+  }
+  .find-match {
+    background: rgba(255, 214, 0, 0.30);
+  }
+  .find-match-current {
+    background: #d97826;
+    color: #fff;
+  }
+  .cm-find-match {
+    background: rgba(255, 214, 0, 0.30);
   }
 }

@@ -77,6 +77,31 @@
         </div>
         <div id="editor-wrap">
           <div id="editor"></div>
+          <!-- 正文内查找/替换浮动面板(Cmd/Ctrl+F 打开) -->
+          <div id="find-panel" class="hidden">
+            <div class="find-head">
+              <div class="find-tabs">
+                <button id="find-tab-find" class="find-tab active">查找</button>
+                <button id="find-tab-replace" class="find-tab">替换</button>
+              </div>
+              <button id="find-close" class="find-close" title="关闭">
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+              </button>
+            </div>
+            <div class="find-row">
+              <input id="find-input" type="text" placeholder="在文档内查找" spellcheck="false" />
+              <span id="find-counter" class="find-counter">0/0</span>
+            </div>
+            <div id="find-replace-row" class="find-row hidden">
+              <input id="find-replace-input" type="text" placeholder="替换为" spellcheck="false" />
+            </div>
+            <div class="find-actions">
+              <button id="find-prev" class="find-btn" disabled>上一处</button>
+              <button id="find-next" class="find-btn" disabled>下一处</button>
+              <button id="find-replace" class="find-btn find-replace-only" disabled>替换</button>
+              <button id="find-replace-all" class="find-btn find-replace-only" disabled>全部替换</button>
+            </div>
+          </div>
           <!-- 大纲悬浮窗(点击顶栏大纲按钮弹出) -->
           <div id="toc-popup" class="hidden">
             <div class="toc-popup-title">大纲</div>

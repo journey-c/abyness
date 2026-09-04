@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- 禁止 macOS 在「编辑」菜单自动注入「开始听写…」与「表情与符号」两项 -->
+  <key>NSDisabledDictationMenuItem</key>
+  <true/>
+  <key>NSDisabledCharacterPaletteMenuItem</key>
+  <true/>
+</dict>
+</plist>

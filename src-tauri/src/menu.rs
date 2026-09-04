@@ -12,13 +12,19 @@ const ICON_FOLDER: &[u8] = include_bytes!("../icons/menu/folder.png");
 
 /// 初始化原生菜单(启动时调用一次)。
 pub fn setup_menu(app: &App) -> tauri::Result<()> {
+    // macOS 会往任何「编辑」菜单自动塞入 开始听写 / 表情与符号(AppKit)。
+    // 这两项由 NSUserDefaults 开关控制,必须在建菜单前设好(dev 与打包都生效)。
+    // AutoFill 由 WebKit 启动后注入,无开关键,改在 RunEvent::Ready 时移除。
+    #[cfg(target_os = "macos")]
+    suppress_macos_auto_menu_items();
+
     let handle = app.handle().clone();
     build_and_set(&handle)?;
 
     // 自定义菜单项 → 转发为前端事件
     app.on_menu_event(move |app, event| {
         let id = event.id().0.as_str();
-        if matches!(id, "new" | "open_folder" | "save" | "toggle_sidebar") {
+        if matches!(id, "new" | "open_folder" | "save" | "toggle_sidebar" | "find" | "replace") {
             let _ = app.emit(&format!("menu:{id}"), ());
         } else if id == "recent_clear" {
             recent::clear(app);
@@ -35,6 +41,54 @@ pub fn setup_menu(app: &App) -> tauri::Result<()> {
 /// 供命令层在“打开了新文件/文件夹”后调用,刷新“打开最近”子菜单。
 pub fn rebuild(app: &AppHandle) -> tauri::Result<()> {
     build_and_set(app)
+}
+
+/// macOS:注册用户默认项,阻止系统自动在「编辑」菜单追加
+/// 开始听写(Start Dictation)与 表情与符号(Emoji & Symbols)。
+/// 这两项由 AppKit 在构建菜单时读取 NSUserDefaults 决定,必须在建菜单前调用。
+/// (AutoFill 无对应开关键——由 WebKit 启动后注入,另见 remove_autofill_menu_item。)
+#[cfg(target_os = "macos")]
+fn suppress_macos_auto_menu_items() {
+    use objc2_foundation::{NSString, NSUserDefaults};
+
+    let defaults = NSUserDefaults::standardUserDefaults();
+    for key in ["NSDisabledDictationMenuItem", "NSDisabledCharacterPaletteMenuItem"] {
+        let ns_key = NSString::from_str(key);
+        defaults.setBool_forKey(true, &ns_key);
+    }
+}
+
+/// macOS:移除 WebKit 在启动后注入到「编辑」菜单的 AutoFill 子菜单。
+/// 必须在 NSApplication 完成启动之后(WebKit 注入完成)才有效,
+/// 故由 lib.rs 在 `RunEvent::Ready` 时调用。
+#[cfg(target_os = "macos")]
+pub fn remove_autofill_menu_item() {
+    use objc2::MainThreadMarker;
+    use objc2_app_kit::NSApplication;
+    use objc2_foundation::NSString;
+
+    let Some(mtm) = MainThreadMarker::new() else {
+        return;
+    };
+    let app = NSApplication::sharedApplication(mtm);
+    let Some(main_menu) = app.mainMenu() else {
+        return;
+    };
+    // 菜单标题为中文「编辑」
+    let edit_title = NSString::from_str("编辑");
+    let Some(edit_item) = main_menu.itemWithTitle(&edit_title) else {
+        return;
+    };
+    let Some(edit_menu) = edit_item.submenu() else {
+        return;
+    };
+    // AutoFill 项在英文/中文系统下标题分别为 "AutoFill" / "自动填充"
+    for title in ["AutoFill", "自动填充"] {
+        let ns_title = NSString::from_str(title);
+        if let Some(item) = edit_menu.itemWithTitle(&ns_title) {
+            edit_menu.removeItem(&item);
+        }
+    }
 }
 
 /// 构建整套菜单并设置到应用(可重复调用以刷新“打开最近”)。
@@ -76,15 +130,28 @@ fn build_and_set(handle: &AppHandle) -> tauri::Result<()> {
         .item(&PredefinedMenuItem::close_window(handle, None)?)
         .build()?;
 
-    // 编辑菜单:预定义项
+    // 编辑菜单:预定义项(强制中文文案) + 查找子菜单
+    let find_item = MenuItemBuilder::new("查找")
+        .id("find")
+        .accelerator("CmdOrCtrl+F")
+        .build(handle)?;
+    let replace_item = MenuItemBuilder::new("查找与替换")
+        .id("replace")
+        .build(handle)?;
+    let find_submenu = SubmenuBuilder::new(handle, "查找")
+        .item(&find_item)
+        .item(&replace_item)
+        .build()?;
+
     let edit_menu = SubmenuBuilder::new(handle, "编辑")
-        .item(&PredefinedMenuItem::undo(handle, None)?)
-        .item(&PredefinedMenuItem::redo(handle, None)?)
+        .item(&PredefinedMenuItem::undo(handle, Some("撤销"))?)
+        .item(&PredefinedMenuItem::redo(handle, Some("重做"))?)
         .separator()
-        .item(&PredefinedMenuItem::cut(handle, None)?)
-        .item(&PredefinedMenuItem::copy(handle, None)?)
-        .item(&PredefinedMenuItem::paste(handle, None)?)
-        .item(&PredefinedMenuItem::select_all(handle, None)?)
+        .item(&PredefinedMenuItem::cut(handle, Some("剪切"))?)
+        .item(&PredefinedMenuItem::copy(handle, Some("拷贝"))?)
+        .item(&PredefinedMenuItem::paste(handle, Some("粘贴"))?)
+        .separator()
+        .item(&find_submenu)
         .build()?;
 
     // 视图菜单

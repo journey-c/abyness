@@ -16,6 +16,7 @@ import { Editor } from "./editor";
 import { FileTree } from "./filetree";
 import { ContextMenu } from "./contextmenu";
 import { TableToolbar } from "./tabletoolbar";
+import { FindBar } from "./findbar";
 import { Sidebar } from "./sidebar";
 import { TocPopup } from "./tocpopup";
 import { FileWatcher } from "./filewatcher";
@@ -50,6 +51,9 @@ new ContextMenu(editorEl, editor);
 
 // 表格编辑工具条(点击表格时在左上角显示:尺寸/对齐/删除)
 new TableToolbar(editorEl, editor);
+
+// 正文内查找/替换浮动面板(Cmd/Ctrl+F 打开)
+const findBar = new FindBar(editorEl, () => editor.getView());
 
 // 侧栏:文件树 / 大纲 / 搜索 三视图
 const sidebar = new Sidebar({
@@ -119,6 +123,7 @@ async function openFile(path: string): Promise<void> {
     return;
   }
   const content = await readFile(path);
+  findBar.close();
   await editor.load(content);
   currentFile = path;
   dirty = false;
@@ -142,6 +147,7 @@ async function newFile(): Promise<void> {
   if (dirty && !confirm("当前文件有未保存修改,确定放弃并新建?")) {
     return;
   }
+  findBar.close();
   await editor.load("");
   currentFile = null;
   dirty = false;
@@ -247,6 +253,7 @@ async function deleteEntry(path: string, isDir: boolean): Promise<void> {
     await deletePath(path);
     // 若删除的是当前打开文件,清空编辑器
     if (currentFile === path || (isDir && currentFile?.startsWith(path + "/"))) {
+      findBar.close();
       await editor.load("");
       currentFile = null;
       dirty = false;
@@ -282,6 +289,7 @@ function hideReloadBar(): void {
 async function reloadCurrent(): Promise<void> {
   if (!currentFile) return;
   const content = await readFile(currentFile);
+  findBar.close();
   await editor.load(content);
   dirty = false;
   await watcher.watch(currentFile);
@@ -322,7 +330,16 @@ window.addEventListener("keydown", (e) => {
     e.preventDefault();
     void saveFile();
   }
+  // ⌘F / Ctrl+F:打开正文内查找面板
+  if ((e.metaKey || e.ctrlKey) && (e.key === "f" || e.key === "F")) {
+    e.preventDefault();
+    findBar.open("find");
+  }
 });
+
+// 原生菜单「查找 / 查找与替换」
+void listen("menu:find", () => findBar.open("find"));
+void listen("menu:replace", () => findBar.open("replace"));
 
 // 启动时展示一个空白编辑器(可直接输入),不显示任何提示文字。
 // 编辑器首帧渲染完成后才淡入整个界面,避免 FOUC(闪出未渲染文字)。

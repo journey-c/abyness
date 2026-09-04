@@ -4,6 +4,8 @@ import { callCommand } from "@milkdown/kit/utils";
 import { editorViewCtx } from "@milkdown/kit/core";
 import type { CmdKey } from "@milkdown/kit/core";
 import type { EditorView as ProseView } from "@milkdown/kit/prose/view";
+import { findPlugin } from "./findplugin";
+import { codeFindHighlighter, suppressCodeSearch } from "./findcm";
 
 // Crepe 主题(接近 GitHub/Typora 的浅色外观)与通用样式
 import "@milkdown/crepe/theme/common/style.css";
@@ -49,7 +51,9 @@ export class Editor {
       featureConfigs: {
         // 代码块长行自动换行(而非横向滚动截断),贴近 Typora
         [CrepeFeature.CodeMirror]: {
-          extensions: [EditorView.lineWrapping],
+          // lineWrapping:长行换行;suppressCodeSearch:屏蔽代码块自带搜索框(只留全局查找);
+          // codeFindHighlighter:让全局查找高亮也落到代码块内
+          extensions: [EditorView.lineWrapping, suppressCodeSearch, codeFindHighlighter],
         },
       },
     });
@@ -59,6 +63,9 @@ export class Editor {
         this.onChange(md);
       });
     });
+
+    // 正文内查找/替换插件(装饰高亮 + 跳转/替换操作)
+    crepe.editor.use(findPlugin);
 
     await crepe.create();
     this.crepe = crepe;
